@@ -6,15 +6,15 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-export class ExampleNode implements INodeType {
+export class FiderNode implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Example Node',
-		name: 'exampleNode',
+		displayName: 'Fider',
+		name: 'fiderNode',
 		group: ['transform'],
 		version: 1,
-		description: 'Basic Example Node',
+		description: 'Fider node',
 		defaults: {
-			name: 'Example Node',
+			name: 'Fider',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
@@ -22,7 +22,7 @@ export class ExampleNode implements INodeType {
 			// Node properties which the user gets displayed and
 			// can change on the node.
 			{
-				displayName: 'My String',
+				displayName: 'String',
 				name: 'myString',
 				type: 'string',
 				default: '',
