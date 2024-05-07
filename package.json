@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-fider",
-  "version": "1.0.6",
+  "version": "1.0.22",
   "description": "n8n node to integrate with Fider",
   "keywords": [
     "n8n-community-node-package",

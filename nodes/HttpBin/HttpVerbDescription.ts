@@ -10,14 +10,14 @@ export const httpVerbOperations: INodeProperties[] = [
 
 		displayOptions: {
 			show: {
-				resource: ['httpVerb'],
+				resource: ['post'],
 			},
 		},
 		options: [
 			{
-				name: 'GET',
+				name: 'Create a post',
 				value: 'get',
-				action: 'Perform a GET request',
+				action: 'Create a post',
 				routing: {
 					request: {
 						method: 'GET',
@@ -26,9 +26,9 @@ export const httpVerbOperations: INodeProperties[] = [
 				},
 			},
 			{
-				name: 'DELETE',
+				name: 'Delete a post',
 				value: 'delete',
-				action: 'Perform a DELETE request',
+				action: 'Delete a post',
 				routing: {
 					request: {
 						method: 'DELETE',
@@ -39,6 +39,44 @@ export const httpVerbOperations: INodeProperties[] = [
 		],
 		default: 'get',
 	},
+	{
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		displayOptions: {
+			show: {
+				resource: ['vote'],
+			},
+		},
+		options: [
+			{
+				name: 'Upvote',
+				value: 'get',
+				action: 'Upvote',
+				routing: {
+					request: {
+						method: 'GET',
+						url: '/get',
+					},
+				},
+			},
+			{
+				name: 'Downvote',
+				value: 'delete',
+				action: 'Downvote',
+				routing: {
+					request: {
+						method: 'DELETE',
+						url: '/delete',
+					},
+				},
+			},
+		],
+		default: 'get',
+	}
+
+
 ];
 
 // Here we define what to show when the `get` operation is selected.

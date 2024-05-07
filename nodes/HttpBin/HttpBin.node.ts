@@ -18,11 +18,11 @@ export class HttpBin implements INodeType {
 		credentials: [
 			{
 				name: 'httpbinApi',
-				required: false,
+				required: true,
 			},
 		],
 		requestDefaults: {
-			baseURL: 'https://httpbin.org',
+			baseURL: 'http://localhost/api/v1/',
 			url: '',
 			headers: {
 				Accept: 'application/json',
@@ -48,11 +48,15 @@ export class HttpBin implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'HTTP Verb',
-						value: 'httpVerb',
+						name: 'Post',
+						value: 'post',
+					},
+					{
+						name: 'Vote',
+						value: 'vote',
 					},
 				],
-				default: 'httpVerb',
+				default: 'post',
 			},
 
 			...httpVerbOperations,
