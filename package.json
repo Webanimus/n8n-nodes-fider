@@ -1,5 +1,5 @@
 {
-  "name": "docker_n8n",
+  "name": "n8n-nodes-fider",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
