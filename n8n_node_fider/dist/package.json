@@ -1,19 +1,16 @@
 {
-  "name": "n8n-nodes-fider",
-  "version": "0.5.1",
+  "name": "@webanimus/n8n-nodes-fider",
+  "version": "1.0.0",
   "description": "Fider node",
   "keywords": [
     "n8n-community-node-package"
   ],
   "license": "MIT",
-  "homepage": "",
-  "author": {
-    "name": "LemaitreEnzo",
-    "email": "lemaitreenzo05@gmail.com"
-  },
+  "homepage": "https://github.com/Webanimus/n8n-nodes-fider/tree/master#readme",
+  "author": "LemaitreEnzo <lemaitreenzo05@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LemaitreEnzo/n8n-node.git"
+    "url": "git+https://github.com/LemaitreEnzo/n8n-node.git"
   },
   "engines": {
     "node": "<=18.15.0",
@@ -65,5 +62,11 @@
   "dependencies": {
     "bech32": "^2.0.0",
     "websocket-polyfill": "^0.0.3"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "bugs": {
+    "url": "https://github.com/LemaitreEnzo/n8n-node/issues"
   }
 }

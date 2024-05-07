@@ -36,8 +36,7 @@ class FiderCredentialsApi {
 		};
 		this.test = {
 			request: {
-				baseURL: 'https://localhost.com/',
-				url: 'api/v1',
+				baseURL: 'https://localhost.com/api/v1',
 			},
 		};
 	}

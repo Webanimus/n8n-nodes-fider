@@ -1,5 +1,6 @@
 import {
 	INodeType,
+	INodeExecutionData
 } from 'n8n-workflow';
 
 export class Fider implements INodeType {

@@ -1,4 +1,6 @@
-import { INodeType, INodeTypeDescription } from 'n8n-workflow';
-export declare class HttpBin implements INodeType {
+import { IExecuteFunctions } from 'n8n-core';
+import { INodeExecutionData, INodeType, INodeTypeDescription } from 'n8n-workflow';
+export declare class NotionMd implements INodeType {
     description: INodeTypeDescription;
+    execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]>;
 }
