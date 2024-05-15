@@ -15,7 +15,7 @@ export const httpVerbOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Create a post',
+				name: 'Create a Post',
 				value: 'get',
 				action: 'Create a post',
 				routing: {
@@ -26,7 +26,7 @@ export const httpVerbOperations: INodeProperties[] = [
 				},
 			},
 			{
-				name: 'Delete a post',
+				name: 'Delete a Post',
 				value: 'delete',
 				action: 'Delete a post',
 				routing: {
@@ -74,9 +74,7 @@ export const httpVerbOperations: INodeProperties[] = [
 			},
 		],
 		default: 'get',
-	}
-
-
+	},
 ];
 
 // Here we define what to show when the `get` operation is selected.
