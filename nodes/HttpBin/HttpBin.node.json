@@ -4,15 +4,15 @@
 	"codexVersion": "1.0",
 	"categories": ["Development", "Developer Tools"],
 	"resources": {
-		"credentialDocumentation": [
-			{
-				"url": "http://httpbin.org/#/Auth/get_bearer"
-			}
-		],
-		"primaryDocumentation": [
-			{
-				"url": "http://httpbin.org/"
-			}
-		]
+			"credentialDocumentation": [
+					{
+							"url": "http://httpbin.org/#/Auth/get_bearer"
+					}
+			],
+			"primaryDocumentation": [
+					{
+							"url": "http://httpbin.org/"
+					}
+			]
 	}
 }

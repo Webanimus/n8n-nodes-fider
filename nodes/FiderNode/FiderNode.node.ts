@@ -1,4 +1,5 @@
 import {
+	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeType,
@@ -6,71 +7,190 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
+import { createNewPost, deletePost, editPost, getPosts, votePost } from './GenericFunctions';
+
 export class FiderNode implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Fider',
 		name: 'fiderNode',
+		icon: 'file:fider.svg',  // Remplacer par une icône SVG
 		group: ['transform'],
 		version: 1,
-		description: 'Fider node',
+		description: 'Interact with Fider API',
 		defaults: {
-			name: 'Fider',
+			name: 'fider',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
-		properties: [
-			// Node properties which the user gets displayed and
-			// can change on the node.
+		credentials: [
 			{
-				displayName: 'String',
-				name: 'myString',
+				name: 'fiderApi',
+				required: true,
+			},
+		],
+		properties: [
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,  // Ajouté
+				options: [
+					{
+						name: 'Post',
+						value: 'post',
+					},
+				],
+				default: 'post',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['post'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						action: 'Create a post',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						action: 'Delete a post',
+					},
+					{
+						name: 'Edit',
+						value: 'edit',
+						action: 'Edit a post',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						action: 'Get a post',
+					},
+					{
+						name: 'Vote',
+						value: 'vote',
+						action: 'Vote on a post',
+					},
+				],
+				default: 'create',
+			},
+			{
+				displayName: 'Title',
+				name: 'title',
 				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create', 'edit'],
+					},
+				},
 				default: '',
-				placeholder: 'Placeholder value',
-				description: 'The description text',
+				description: 'Title of the post',
+			},
+			{
+				displayName: 'Description',
+				name: 'description',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['create', 'edit'],
+					},
+				},
+				default: '',
+				description: 'Description of the post',
+			},
+			{
+				displayName: 'Post ID',
+				name: 'postId',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['get', 'edit', 'delete', 'vote'],
+					},
+				},
+				default: '',
+				description: 'ID of the post',
+			},
+			{
+				displayName: 'Vote Type',
+				name: 'voteType',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['post'],
+						operation: ['vote'],
+					},
+				},
+				options: [
+					{
+						name: 'Upvote',
+						value: 'upvote',
+					},
+					{
+						name: 'Downvote',
+						value: 'downvote',
+					},
+				],
+				default: 'upvote',
 			},
 		],
 	};
 
-	// The function below is responsible for actually doing whatever this node
-	// is supposed to do. In this case, we're just appending the `myString` property
-	// with whatever the user has entered.
-	// You can make async calls and use `await`.
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
+		const returnData: INodeExecutionData[] = [];
 
-		let item: INodeExecutionData;
-		let myString: string;
+		for (let i = 0; i < items.length; i++) {
+			const resource = this.getNodeParameter('resource', i) as string;
+			const operation = this.getNodeParameter('operation', i) as string;
 
-		// Iterates over all input items and add the key "myString" with the
-		// value the parameter "myString" resolves to.
-		// (This could be a different value for each item in case it contains an expression)
-		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
-				myString = this.getNodeParameter('myString', itemIndex, '') as string;
-				item = items[itemIndex];
-
-				item.json['myString'] = myString;
-			} catch (error) {
-				// This node should never fail but we want to showcase how
-				// to handle errors.
-				if (this.continueOnFail()) {
-					items.push({ json: this.getInputData(itemIndex)[0].json, error, pairedItem: itemIndex });
-				} else {
-					// Adding `itemIndex` allows other workflows to handle this error
-					if (error.context) {
-						// If the error thrown already contains the context property,
-						// only append the itemIndex
-						error.context.itemIndex = itemIndex;
-						throw error;
+				if (resource === 'post') {
+					if (operation === 'create') {
+						const title = this.getNodeParameter('title', i) as string;
+						const description = this.getNodeParameter('description', i) as string;
+						const responseData = await createNewPost.call(this, title, description);
+						returnData.push({ json: responseData });
 					}
-					throw new NodeOperationError(this.getNode(), error, {
-						itemIndex,
-					});
+					if (operation === 'get') {
+						const responseData = await getPosts.call(this);
+						returnData.push({ json: responseData });
+					}
+					if (operation === 'edit') {
+						const postId = this.getNodeParameter('postId', i) as number;
+						const updatedData = this.getNodeParameter('updateFields', i) as IDataObject;
+						const responseData = await editPost.call(this, postId, updatedData);
+						returnData.push({ json: responseData });
+					}
+					if (operation === 'delete') {
+						const postId = this.getNodeParameter('postId', i) as number;
+						await deletePost.call(this, postId);
+						returnData.push({ json: { success: true } });
+					}
+					if (operation === 'vote') {
+						const postId = this.getNodeParameter('postId', i) as number;
+						await votePost.call(this, postId);
+						returnData.push({ json: { success: true } });
+					}
 				}
+			} catch (error) {
+				if (this.continueOnFail()) {
+					returnData.push({ json: { error: error.message } });
+					continue;
+				}
+				throw new NodeOperationError(this.getNode(), error);
 			}
 		}
 
-		return this.prepareOutputData(items);
+		return [returnData];
 	}
 }

@@ -1,11 +1,10 @@
 import { INodeType, INodeTypeDescription } from 'n8n-workflow';
-import { httpVerbFields, httpVerbOperations } from './HttpVerbDescription';
+import { httpVerbFields, httpVerbOperations } from "./HttpVerbDescription";
 
 export class HttpBin implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'HttpBin',
 		name: 'httpBin',
-		icon: 'file:httpbin.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -18,28 +17,17 @@ export class HttpBin implements INodeType {
 		credentials: [
 			{
 				name: 'httpbinApi',
-				required: true,
+				required: false,
 			},
 		],
 		requestDefaults: {
-			baseURL: 'http://localhost/api/v1/',
+			baseURL: 'https://httpbin.org',
 			url: '',
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 			},
 		},
-		/**
-		 * In the properties array we have two mandatory options objects required
-		 *
-		 * [Resource & Operation]
-		 *
-		 * https://docs.n8n.io/integrations/creating-nodes/code/create-first-node/#resources-and-operations
-		 *
-		 * In our example, the operations are separated into their own file (HTTPVerbDescription.ts)
-		 * to keep this class easy to read.
-		 *
-		 */
 		properties: [
 			{
 				displayName: 'Resource',
@@ -48,17 +36,12 @@ export class HttpBin implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Post',
-						value: 'post',
-					},
-					{
-						name: 'Vote',
-						value: 'vote',
+						name: 'HTTP Verb',
+						value: 'httpVerb',
 					},
 				],
-				default: 'post',
+				default: 'httpVerb',
 			},
-
 			...httpVerbOperations,
 			...httpVerbFields,
 		],

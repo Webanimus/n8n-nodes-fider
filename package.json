@@ -1,7 +1,7 @@
 {
-  "name": "n8n-nodes-fider",
-  "version": "1.0.29",
-  "description": "n8n node to integrate with Fider",
+  "name": "@webanimus/n8n-nodes-fider",
+  "version": "1.0.66",
+  "description":"n8n node to integrate with Fider",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
@@ -37,10 +37,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ExampleCredentialsApi.credentials.js"
+      "dist/credentials/FiderApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/HttpBin/HttpBin.node.js"
+      "dist/nodes/FiderNode/FiderNode.node.js"
     ]
   },
   "devDependencies": {
@@ -54,7 +54,7 @@
     "jest": "^29.3.1",
     "joi-to-typescript": "^4.0.7",
     "n8n-core": "^0.125.0",
-    "n8n-workflow": "^0.107.0",
+    "n8n-workflow": "^1.36.1",
     "prettier": "^2.7.1",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",

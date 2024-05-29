@@ -1,23 +1,20 @@
 import { INodeProperties } from 'n8n-workflow';
-
-// When the resource `httpVerb` is selected, this `operation` parameter will be shown.
 export const httpVerbOperations: INodeProperties[] = [
 	{
 		displayName: 'Operation',
 		name: 'operation',
 		type: 'options',
 		noDataExpression: true,
-
 		displayOptions: {
 			show: {
-				resource: ['post'],
+				resource: ['httpVerb'],
 			},
 		},
 		options: [
 			{
-				name: 'Create a Post',
+				name: 'GET',
 				value: 'get',
-				action: 'Create a post',
+				action: 'Perform a GET request',
 				routing: {
 					request: {
 						method: 'GET',
@@ -26,45 +23,9 @@ export const httpVerbOperations: INodeProperties[] = [
 				},
 			},
 			{
-				name: 'Delete a Post',
+				name: 'DELETE',
 				value: 'delete',
-				action: 'Delete a post',
-				routing: {
-					request: {
-						method: 'DELETE',
-						url: '/delete',
-					},
-				},
-			},
-		],
-		default: 'get',
-	},
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: {
-			show: {
-				resource: ['vote'],
-			},
-		},
-		options: [
-			{
-				name: 'Upvote',
-				value: 'get',
-				action: 'Upvote',
-				routing: {
-					request: {
-						method: 'GET',
-						url: '/get',
-					},
-				},
-			},
-			{
-				name: 'Downvote',
-				value: 'delete',
-				action: 'Downvote',
+				action: 'Perform a DELETE request',
 				routing: {
 					request: {
 						method: 'DELETE',
@@ -76,9 +37,6 @@ export const httpVerbOperations: INodeProperties[] = [
 		default: 'get',
 	},
 ];
-
-// Here we define what to show when the `get` operation is selected.
-// We do that by adding `operation: ["get"]` to `displayOptions.show`
 const getOperation: INodeProperties[] = [
 	{
 		displayName: 'Type of Data',
@@ -147,9 +105,6 @@ const getOperation: INodeProperties[] = [
 		},
 	},
 ];
-
-// Here we define what to show when the DELETE Operation is selected.
-// We do that by adding `operation: ["delete"]` to `displayOptions.show`
 const deleteOperation: INodeProperties[] = [
 	{
 		displayName: 'Type of Data',
@@ -270,15 +225,7 @@ const deleteOperation: INodeProperties[] = [
 		},
 	},
 ];
-
 export const httpVerbFields: INodeProperties[] = [
-	/* -------------------------------------------------------------------------- */
-	/*                                httpVerb:get                                */
-	/* -------------------------------------------------------------------------- */
 	...getOperation,
-
-	/* -------------------------------------------------------------------------- */
-	/*                              httpVerb:delete                               */
-	/* -------------------------------------------------------------------------- */
 	...deleteOperation,
 ];
