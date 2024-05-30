@@ -239,9 +239,9 @@ export async function createUser(
 export async function sendASample(this: IExecuteFunctions, subject: string, message: string): Promise<IDataObject> {
 	try {
 		const endpoint = `${baseUrl}/api/v1/invitations/sample`;
-		const data = { subject, message}
+		const data = { subject, message};
 		const response = await apiRequest.call(this, 'POST', endpoint, data);
-		return response
+		return response;
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
 	}

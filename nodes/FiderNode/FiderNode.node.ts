@@ -8,6 +8,7 @@ import {
 } from 'n8n-workflow';
 
 import * as GenericFunctions from './GenericFunctions';
+import { fiderNodeFields } from './fiderNodeDescription';
 
 export class FiderNode implements INodeType {
 	description: INodeTypeDescription = {
@@ -20,6 +21,7 @@ export class FiderNode implements INodeType {
 		defaults: {
 			name: 'fider',
 		},
+		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
@@ -61,7 +63,46 @@ export class FiderNode implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['post', 'comment', 'user', 'sample'],
+						resource: ['post', 'comment'],
+					},
+				},
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						action: 'Create',
+					},
+					{
+						name: 'Delete',
+						value: 'delete',
+						action: 'Delete',
+					},
+					{
+						name: 'Edit',
+						value: 'edit',
+						action: 'Edit',
+					},
+					{
+						name: 'Get',
+						value: 'get',
+						action: 'Get',
+					},
+					{
+						name: 'Vote',
+						value: 'vote',
+						action: 'Vote',
+					},
+				],
+				default: 'create',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['comment'],
 					},
 				},
 				options: [
@@ -89,69 +130,49 @@ export class FiderNode implements INodeType {
 				default: 'create',
 			},
 			{
-				displayName: 'Title',
-				name: 'title',
-				type: 'string',
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['post'],
-						operation: ['create', 'edit'],
+						resource: ['user'],
 					},
 				},
-				default: '',
-				description: 'Title of the post',
-			},
-			{
-				displayName: 'Description',
-				name: 'description',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['create', 'edit'],
+				options: [
+					{
+						name: 'Create',
+						value: 'create',
+						action: 'Create',
 					},
-				},
-				default: '',
-				description: 'Description of the post',
-			},
-			{
-				displayName: 'PostId',
-				name: 'postId',
-				type: 'number',
-				displayOptions: {
-					show: {
-						resource: ['post', 'comment', 'user'],
-						operation: ['edit', 'delete'],
+					{
+						name: 'Get',
+						value: 'get',
+						action: 'Get',
 					},
-				},
-				default: '',
-				description: 'Id',
+				],
+				default: 'create',
 			},
 			{
-				displayName: 'subject',
-				name: 'subject',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['sample'],
-						operation : ['sendSample']
-					},
-				},
-				default: '',
-				description: 'subject of the sample',
-			},
-			{
-				displayName: 'Message',
-				name: 'message',
-				type: 'string',
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
 				displayOptions: {
 					show: {
 						resource: ['sample'],
 					},
 				},
-				default: '',
-				description: 'Message of the sample',
+				options: [
+					{
+						name: 'Send',
+						value: 'send',
+						action: 'Send',
+					},
+				],
+				default: 'send',
 			},
+			...fiderNodeFields,
 		],
 	};
 
@@ -200,7 +221,7 @@ export class FiderNode implements INodeType {
 						returnData.push({ json: responseData });
 					}
 					if (operation === 'get') {
-						const postID = this.getNodeParameter('postID', i) as number;
+						const postID = this.getNodeParameter('postId', i) as number;
 						const responseData = await GenericFunctions.getComments.call(this, postID);
 						returnData.push({ json: responseData });
 					}
@@ -220,7 +241,7 @@ export class FiderNode implements INodeType {
 				}
 				if (resource === 'user') {
 					if (operation === 'create') {
-						const name = this.getNodeParameter('name', i) as string;
+						const name = this.getNodeParameter('userName', i) as string;
 						const email = this.getNodeParameter('email', i) as string;
 						const responseData = await GenericFunctions.createUser.call(this, name, email);
 						returnData.push({ json: responseData });
