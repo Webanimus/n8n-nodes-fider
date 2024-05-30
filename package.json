@@ -1,6 +1,6 @@
 {
   "name": "@webanimus/n8n-nodes-fider",
-  "version": "1.0.66",
+  "version": "1.0.75",
   "description":"n8n node to integrate with Fider",
   "keywords": [
     "n8n-community-node-package",

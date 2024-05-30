@@ -7,7 +7,9 @@ import {
 	NodeApiError,
 } from 'n8n-workflow';
 
-import { FiderCredentials } from './types';
+import { FiderCredentials} from './types';
+
+const baseUrl = 'http://localhost';
 
 export async function apiRequest(
 	this: IAllExecuteFunctions,
@@ -78,7 +80,7 @@ export async function createNewPost(
 	description: string,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = '/api/v1/posts/';
+		const endpoint = `${baseUrl}/api/v1/posts/`;
 		const data = { title, description };
 		const response = await apiRequest.call(this, 'POST', endpoint, data);
 		return response;
@@ -103,7 +105,7 @@ export async function editPost(
 	updatedData: IDataObject,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}`;
 		const postData = { ...await apiRequest.call(this, 'GET', endpoint), ...updatedData };
 		const response = await apiRequest.call(this, 'PUT', endpoint, postData);
 		return response;
@@ -114,7 +116,7 @@ export async function editPost(
 
 export async function votePost(this: IExecuteFunctions, postId: number): Promise<void> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/votes`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/votes`;
 		await apiRequest.call(this, 'POST', endpoint);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
@@ -125,6 +127,121 @@ export async function deletePost(this: IExecuteFunctions, postId: number): Promi
 	try {
 		const endpoint = `/api/v1/posts/${postId}`;
 		await apiRequest.call(this, 'DELETE', endpoint);
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to add a comment to a post
+export async function addComment(
+	this: IExecuteFunctions,
+	postId: number,
+	content: string,
+): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments`;
+		const data = { content };
+		const response = await apiRequest.call(this, 'POST', endpoint, data);
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to get all comments for a post
+export async function getComments(
+	this: IExecuteFunctions,
+	postId: number,
+): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments`;
+		const response = await apiRequest.call(this, 'GET', endpoint);
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to get a single comment
+export async function getComment(
+	this: IExecuteFunctions,
+	postId: number,
+	commentId: number,
+): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments/${commentId}`;
+		const response = await apiRequest.call(this, 'GET', endpoint);
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to edit a comment
+export async function editComment(
+	this: IExecuteFunctions,
+	postId: number,
+	commentId: number,
+	updatedData: IDataObject,
+): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments/${commentId}`;
+		const commentData = { ...await apiRequest.call(this, 'GET', endpoint), ...updatedData };
+		const response = await apiRequest.call(this, 'PUT', endpoint, commentData);
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to delete a comment
+export async function deleteComment(
+	this: IExecuteFunctions,
+	postId: number,
+	commentId: number,
+): Promise<void> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments/${commentId}`;
+		await apiRequest.call(this, 'DELETE', endpoint);
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to get all users
+export async function getUsers(this: IExecuteFunctions): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/users`;
+		const response = await apiRequest.call(this, 'GET', endpoint);
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to create a new user
+export async function createUser(
+	this: IExecuteFunctions,
+	name: string,
+	email: string,
+): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/users`;
+		const data = { name, email };
+		const response = await apiRequest.call(this, 'POST', endpoint, data);
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error);
+	}
+}
+
+// Function to send a sample invitation
+export async function sendASample(this: IExecuteFunctions, subject: string, message: string): Promise<IDataObject> {
+	try {
+		const endpoint = `${baseUrl}/api/v1/invitations/sample`;
+		const data = { subject, message};
+		const response = await apiRequest.call(this, 'POST', endpoint, data);
+		return response;
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
 	}

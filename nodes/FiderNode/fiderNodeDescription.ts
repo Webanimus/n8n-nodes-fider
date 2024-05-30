@@ -1,52 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
 
-export const fiderNodeOperation: INodeProperties[] = [
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: {
-			show: {
-				resource: ['post'],
-			},
-		},
-		options: [
-			{
-				name: 'Create',
-				value: 'create',
-				description: 'Create a post',
-				action: 'Create a post',
-			},
-			{
-				name: 'Delete',
-				value: 'delete',
-				description: 'Delete a post',
-				action: 'Delete a post',
-			},
-			{
-				name: 'Edit',
-				value: 'edit',
-				description: 'Edit a post',
-				action: 'Edit a post',
-			},
-			{
-				name: 'Get',
-				value: 'get',
-				description: 'Get post',
-				action: 'Get post',
-			},
-			{
-				name: 'Vote',
-				value: 'vote',
-				description: 'Vote on a post',
-				action: 'Vote on a post',
-			},
-		],
-		default: 'create',
-	},
-];
-
 export const fiderNodeFields: INodeProperties[] = [
 	{
 		displayName: 'Title',
@@ -97,7 +50,7 @@ export const fiderNodeFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['edit'],
-				resource: ['post'],
+				resource: ['post', 'comment'],
 			},
 		},
 		default: {},
@@ -126,8 +79,7 @@ export const fiderNodeFields: INodeProperties[] = [
 		required: true,
 		displayOptions: {
 			show: {
-				operation: ['create', 'get', 'delete', 'edit', 'vote'],
-				resource: ['post'],
+				resource: ['post', 'comment', 'user', 'sample'],
 			},
 		},
 		default: '',
@@ -185,6 +137,104 @@ export const fiderNodeFields: INodeProperties[] = [
 		default: false,
 		description: 'Whether to detach the post',
 	},
+	// Comment Fields
+	{
+		displayName: 'Post ID',
+		name: 'postId',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['create', 'get'],
+				resource: ['comment'],
+			},
+		},
+		default: 0,
+		description: 'ID of the post',
+	},
+	{
+		displayName: 'Comment ID',
+		name: 'commentId',
+		type: 'number',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['edit', 'delete'],
+				resource: ['comment'],
+			},
+		},
+		default: 0,
+		description: 'ID of the comment',
+	},
+	{
+		displayName: 'Content',
+		name: 'content',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['create', 'edit'],
+				resource: ['comment'],
+			},
+		},
+		default: '',
+		description: 'Content of the comment',
+	},
+	// User Fields
+	{
+		displayName: 'User Name',
+		name: 'userName',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['create'],
+				resource: ['user'],
+			},
+		},
+		default: '',
+		description: 'Name of the user',
+	},
+	{
+		displayName: 'Email',
+		name: 'email',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['create'],
+				resource: ['user'],
+			},
+		},
+		default: '',
+		placeholder: 'name@gmail.com',
+		description: 'Email of the user',
+	},
+	// Sample Fields
+	{
+		displayName: 'Subject',
+		name: 'subject',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['sample'],
+			},
+		},
+		default: '',
+		description: 'The subject of the email to be sent',
+	},
+	{
+		displayName: 'Message',
+		name: 'message',
+		type: 'string',
+		required: true,
+		displayOptions: {
+			show: {
+				resource: ['sample'],
+			},
+		},
+		default: '',
+		description: 'The content of the email to be sent',
+	},
 ];
-
-
