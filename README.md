@@ -11,12 +11,12 @@ You need the following installed on your development machine:
 
 1. Navigate to your n8n installation directory.
 2. Install the node module:
-**```bash
+```bash
 npm install @webanimus/n8n-nodes-fider
 ```
 3. Restart n8n:
 ```bash
-n8n start**
+n8n start
 ```
 
 
