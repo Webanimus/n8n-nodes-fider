@@ -175,8 +175,8 @@ export const fiderNodeFields: INodeProperties[] = [
 		required: true,
 		displayOptions: {
 			show: {
-				operation: ['create', 'get', 'delete', 'edit', 'vote'],
-				resource: ['post'],
+				operation: ['create', 'createComment', 'createUser', 'get', 'getComment', 'getComments', 'getUsers', 'delete', 'deleteComment', 'edit', 'editComment', 'sendSample', 'vote'],
+				resource: ['post', 'comment', 'users', 'sample'],
 			},
 		},
 		default: '',

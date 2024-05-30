@@ -9,6 +9,8 @@ import {
 
 import { FiderCredentials} from './types';
 
+const baseUrl = 'http://localhost';
+
 export async function apiRequest(
 	this: IAllExecuteFunctions,
 	method: IHttpRequestMethods,
@@ -78,7 +80,7 @@ export async function createNewPost(
 	description: string,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = '/api/v1/posts/';
+		const endpoint = `${baseUrl}/api/v1/posts/`;
 		const data = { title, description };
 		const response = await apiRequest.call(this, 'POST', endpoint, data);
 		return response;
@@ -103,7 +105,7 @@ export async function editPost(
 	updatedData: IDataObject,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}`;
 		const postData = { ...await apiRequest.call(this, 'GET', endpoint), ...updatedData };
 		const response = await apiRequest.call(this, 'PUT', endpoint, postData);
 		return response;
@@ -114,7 +116,7 @@ export async function editPost(
 
 export async function votePost(this: IExecuteFunctions, postId: number): Promise<void> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/votes`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/votes`;
 		await apiRequest.call(this, 'POST', endpoint);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
@@ -137,7 +139,7 @@ export async function addComment(
 	content: string,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/comments`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments`;
 		const data = { content };
 		const response = await apiRequest.call(this, 'POST', endpoint, data);
 		return response;
@@ -152,7 +154,7 @@ export async function getComments(
 	postId: number,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/comments`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments`;
 		const response = await apiRequest.call(this, 'GET', endpoint);
 		return response;
 	} catch (error) {
@@ -167,7 +169,7 @@ export async function getComment(
 	commentId: number,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/comments/${commentId}`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments/${commentId}`;
 		const response = await apiRequest.call(this, 'GET', endpoint);
 		return response;
 	} catch (error) {
@@ -183,7 +185,7 @@ export async function editComment(
 	updatedData: IDataObject,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/comments/${commentId}`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments/${commentId}`;
 		const commentData = { ...await apiRequest.call(this, 'GET', endpoint), ...updatedData };
 		const response = await apiRequest.call(this, 'PUT', endpoint, commentData);
 		return response;
@@ -199,7 +201,7 @@ export async function deleteComment(
 	commentId: number,
 ): Promise<void> {
 	try {
-		const endpoint = `/api/v1/posts/${postId}/comments/${commentId}`;
+		const endpoint = `${baseUrl}/api/v1/posts/${postId}/comments/${commentId}`;
 		await apiRequest.call(this, 'DELETE', endpoint);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
@@ -209,7 +211,7 @@ export async function deleteComment(
 // Function to get all users
 export async function getUsers(this: IExecuteFunctions): Promise<IDataObject> {
 	try {
-		const endpoint = '/api/v1/users';
+		const endpoint = `${baseUrl}/api/v1/users`;
 		const response = await apiRequest.call(this, 'GET', endpoint);
 		return response;
 	} catch (error) {
@@ -224,7 +226,7 @@ export async function createUser(
 	email: string,
 ): Promise<IDataObject> {
 	try {
-		const endpoint = '/api/v1/users';
+		const endpoint = `${baseUrl}/api/v1/users`;
 		const data = { name, email };
 		const response = await apiRequest.call(this, 'POST', endpoint, data);
 		return response;
@@ -234,10 +236,12 @@ export async function createUser(
 }
 
 // Function to send a sample invitation
-export async function sendASample(this: IExecuteFunctions): Promise<void> {
+export async function sendASample(this: IExecuteFunctions, subject: string, message: string): Promise<IDataObject> {
 	try {
-		const endpoint = '/api/v1/invitations/sample';
-		await apiRequest.call(this, 'POST', endpoint);
+		const endpoint = `${baseUrl}/api/v1/invitations/sample`;
+		const data = { subject, message}
+		const response = await apiRequest.call(this, 'POST', endpoint, data);
+		return response
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
 	}

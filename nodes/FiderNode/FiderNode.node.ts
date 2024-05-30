@@ -13,7 +13,7 @@ export class FiderNode implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Fider',
 		name: 'fiderNode',
-		icon: 'file:fider.svg',  // Remplacer par une icône SVG
+		icon: 'file:fider.svg', // Remplacer par une icône SVG
 		group: ['transform'],
 		version: 1,
 		description: 'Interact with Fider API',
@@ -33,7 +33,7 @@ export class FiderNode implements INodeType {
 				displayName: 'Resource',
 				name: 'resource',
 				type: 'options',
-				noDataExpression: true,  // Ajouté
+				noDataExpression: true, // Ajouté
 				options: [
 					{
 						name: 'Post',
@@ -61,34 +61,29 @@ export class FiderNode implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['post'],
+						resource: ['post', 'comment', 'user', 'sample'],
 					},
 				},
 				options: [
 					{
 						name: 'Create',
 						value: 'create',
-						action: 'Create a post',
+						action: 'Create',
 					},
 					{
 						name: 'Delete',
 						value: 'delete',
-						action: 'Delete a post',
+						action: 'Delete',
 					},
 					{
 						name: 'Edit',
 						value: 'edit',
-						action: 'Edit a post',
+						action: 'Edit',
 					},
 					{
 						name: 'Get',
 						value: 'get',
-						action: 'Get a post',
-					},
-					{
-						name: 'Vote',
-						value: 'vote',
-						action: 'Vote on a post',
+						action: 'Get',
 					},
 				],
 				default: 'create',
@@ -120,120 +115,42 @@ export class FiderNode implements INodeType {
 				description: 'Description of the post',
 			},
 			{
-				displayName: 'Post ID',
+				displayName: 'PostId',
 				name: 'postId',
 				type: 'number',
 				displayOptions: {
 					show: {
-						resource: ['post'],
-						operation: ['get', 'edit', 'delete', 'vote'],
+						resource: ['post', 'comment', 'user'],
+						operation: ['edit', 'delete'],
 					},
 				},
 				default: '',
-				description: 'ID of the post',
+				description: 'Id',
 			},
 			{
-				displayName: 'Vote Type',
-				name: 'voteType',
-				type: 'options',
-				displayOptions: {
-					show: {
-						resource: ['post'],
-						operation: ['vote'],
-					},
-				},
-				options: [
-					{
-						name: 'Upvote',
-						value: 'upvote',
-					},
-					{
-						name: 'Downvote',
-						value: 'downvote',
-					},
-				],
-				default: 'upvote',
-			},
-			// Nouveaux champs pour les commentaires
-			{
-				displayName: 'Comment ID',
-				name: 'commentId',
-				type: 'number',
-				displayOptions: {
-					show: {
-						resource: ['comment'],
-						operation: ['get', 'edit', 'delete'],
-					},
-				},
-				default: '',
-				description: 'ID of the comment',
-			},
-			{
-				displayName: 'Comment Text',
-				name: 'commentText',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['comment'],
-						operation: ['create', 'edit'],
-					},
-				},
-				default: '',
-				description: 'Text of the comment',
-			},
-			// Nouveaux champs pour les utilisateurs
-			{
-				displayName: 'User ID',
-				name: 'userId',
-				type: 'number',
-				displayOptions: {
-					show: {
-						resource: ['user'],
-						operation: ['get', 'edit', 'delete'],
-					},
-				},
-				default: '',
-				description: 'ID of the user',
-			},
-			{
-				displayName: 'Username',
-				name: 'username',
-				type: 'string',
-				displayOptions: {
-					show: {
-						resource: ['user'],
-						operation: ['create', 'edit'],
-					},
-				},
-				default: '',
-				description: 'Username of the user',
-			},
-			// Nouveaux champs pour les échantillons
-			{
-				displayName: 'Sample ID',
-				name: 'sampleId',
-				type: 'number',
-				displayOptions: {
-					show: {
-						resource: ['sample'],
-						operation: ['get', 'edit', 'delete'],
-					},
-				},
-				default: '',
-				description: 'ID of the sample',
-			},
-			{
-				displayName: 'Sample Name',
-				name: 'sampleName',
+				displayName: 'subject',
+				name: 'subject',
 				type: 'string',
 				displayOptions: {
 					show: {
 						resource: ['sample'],
-						operation: ['create', 'edit'],
+						operation : ['sendSample']
 					},
 				},
 				default: '',
-				description: 'Name of the sample',
+				description: 'subject of the sample',
+			},
+			{
+				displayName: 'Message',
+				name: 'message',
+				type: 'string',
+				displayOptions: {
+					show: {
+						resource: ['sample'],
+					},
+				},
+				default: '',
+				description: 'Message of the sample',
 			},
 		],
 	};
@@ -276,14 +193,48 @@ export class FiderNode implements INodeType {
 					}
 				}
 				if (resource === 'comment') {
-					// Gérer les opérations CRUD pour les commentaires
-
+					if (operation === 'create') {
+						const postId = this.getNodeParameter('postId', i) as number;
+						const content = this.getNodeParameter('content', i) as string;
+						const responseData = await GenericFunctions.addComment.call(this, postId, content);
+						returnData.push({ json: responseData });
+					}
+					if (operation === 'get') {
+						const postID = this.getNodeParameter('postID', i) as number;
+						const responseData = await GenericFunctions.getComments.call(this, postID);
+						returnData.push({ json: responseData });
+					}
+					if (operation === 'edit') {
+						const postId = this.getNodeParameter('postId', i) as number;
+						const commentId = this.getNodeParameter('postId', i) as number;
+						const updatedData = this.getNodeParameter('updateFields', i) as IDataObject;
+						const responseData = await GenericFunctions.editComment.call(this, postId, commentId, updatedData);
+						returnData.push({ json: responseData });
+					}
+					if (operation === 'delete') {
+						const postId = this.getNodeParameter('postId', i) as number;
+						const commentId = this.getNodeParameter('postId', i) as number;
+						await GenericFunctions.deleteComment.call(this, postId, commentId);
+						returnData.push({ json: { success: true } });
+					}
 				}
 				if (resource === 'user') {
-					// Gérer les opérations CRUD pour les utilisateurs
+					if (operation === 'create') {
+						const name = this.getNodeParameter('name', i) as string;
+						const email = this.getNodeParameter('email', i) as string;
+						const responseData = await GenericFunctions.createUser.call(this, name, email);
+						returnData.push({ json: responseData });
+					}
+					if (operation === 'get') {
+						const responseData = await GenericFunctions.getUsers.call(this);
+						returnData.push({ json: responseData });
+					}
 				}
 				if (resource === 'sample') {
-					// Gérer les opérations CRUD pour les échantillons
+					const subject = this.getNodeParameter('subject', i) as string;
+					const message = this.getNodeParameter('message', i) as string;
+					const responseData = await GenericFunctions.sendASample.call(this, subject, message);
+					returnData.push({ json: responseData });
 				}
 			} catch (error) {
 				if (this.continueOnFail()) {
@@ -293,7 +244,6 @@ export class FiderNode implements INodeType {
 				throw new NodeOperationError(this.getNode(), error);
 			}
 		}
-
 		return [returnData];
 	}
 }
