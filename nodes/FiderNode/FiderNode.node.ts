@@ -63,7 +63,7 @@ export class FiderNode implements INodeType {
 				noDataExpression: true,
 				displayOptions: {
 					show: {
-						resource: ['post', 'comment'],
+						resource: ['post'],
 					},
 				},
 				options: [
