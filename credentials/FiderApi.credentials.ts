@@ -11,12 +11,6 @@ export class FiderApi implements ICredentialType {
 	documentationUrl = 'https://fider.io/docs/api#authentication';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Name',
-			name: 'name',
-			type: 'string',
-			default: 'Authorization',
-		},
-		{
 			displayName: 'ApiToken',
 			name: 'apiToken',
 			type: 'string',
@@ -30,7 +24,8 @@ export class FiderApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=Bearer {{$credentials.apiToken}}',
+				Name : 'Authorizations',
+				Authorization: '=Bearer {{$credentials.authToken}}',
 			},
 		},
 	};
