@@ -30,7 +30,7 @@ export class FiderApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=Bearer {{$credentials.authToken}}',
+				Authorization: '=Bearer {{$credentials.token}}',
 			},
 		},
 	};
@@ -39,7 +39,7 @@ export class FiderApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: '={{$credentials?.domain}}',
-			url: '/bearer',
+			url: '/api/v1/posts',
 		},
 	};
 }

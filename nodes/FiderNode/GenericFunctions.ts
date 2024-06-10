@@ -1,10 +1,16 @@
+import { OptionsWithUri } from 'request';
 import {
-	IAllExecuteFunctions,
+	IHookFunctions,
+	ILoadOptionsFunctions,
+	IWebhookFunctions,
+} from 'n8n-core';
+
+import {
 	IDataObject,
 	IExecuteFunctions,
-	IHttpRequestMethods,
-	IHttpRequestOptions,
+	INode,
 	NodeApiError,
+	NodeOperationError,
 } from 'n8n-workflow';
 
 import { FiderCredentials} from './types';
@@ -12,65 +18,60 @@ import { FiderCredentials} from './types';
 const baseUrl = 'http://localhost';
 
 export async function apiRequest(
-	this: IAllExecuteFunctions,
-	method: IHttpRequestMethods,
-	endpoint: string,
+	this: IExecuteFunctions | IHookFunctions | ILoadOptionsFunctions | IWebhookFunctions,
+	method: string,
+	resource: string,
 	body: IDataObject = {},
 	qs: IDataObject = {},
-	extraOptions: Partial<IHttpRequestOptions> = {},
+	uri?: string,
+	option: IDataObject = {},
 ): Promise<IDataObject> {
-	const credentials = (await this.getCredentials('fiderApi')) as FiderCredentials;
-	const options: IHttpRequestOptions = {
-		...extraOptions,
+	const credentials = await this.getCredentials('fiderApi') as FiderCredentials;
+
+
+	if (!credentials.url || !credentials.apiToken) {
+		throw new NodeOperationError(this.getNode() as INode, 'Credentials are not set!');
+	}
+
+	let options: OptionsWithUri = {
 		method,
+		qs,
 		body,
-		qs: {
-			...qs,
-			token: credentials.token,
-		},
-		baseURL: credentials.url,
-		url: endpoint,
+		uri: uri || `${credentials.url}${resource}`,
 		json: true,
 	};
 
-	if (Object.keys(qs).length === 0) {
-		delete options.qs;
-	}
+	options = Object.assign({}, options, option);
 
-	if (Object.keys(body).length === 0) {
-		delete options.body;
+	// Check if the constructed URI is valid
+	try {
+		new URL(options.uri!);
+	} catch (error) {
+		throw new NodeOperationError(this.getNode() as INode, `Invalid URI: ${options.uri}`);
 	}
 
 	try {
-		const response = await this.helpers.httpRequestWithAuthentication.call(
-			this,
-			'fiderApi',
-			options,
-		);
-		if (typeof response === 'object' && response !== null) {
-			return response as IDataObject;
-		} else {
-			throw new Error('Unexpected response format');
-		}
-	} catch (error) {
-		const errorDetails = {
-			...error,
-			config: error?.cause?.config,
-			request: error?.cause?.request
-				? {
-					path: error?.cause?.request?.path,
-					headers: error?.cause?.request?.headers,
-					data: error?.cause?.request?.data,
-				}
-				: null,
-			response: error?.cause?.response
-				? {
-					data: error?.cause?.response?.data,
-					status: error?.cause?.response?.status,
-				}
-				: null,
+		// Set the authorization header
+		options.headers = {
+			Authorization: `Bearer ${credentials.apiToken}`,
 		};
-		throw new NodeApiError(this.getNode(), errorDetails);
+
+		// If the method is GET, remove the body property
+		if (method === 'GET') {
+			delete options.body;
+		}
+
+		// Perform the HTTP request
+		const response = await this.helpers.request!(options);
+
+		// Handle the response
+		if (response.error) {
+			throw new NodeApiError(this.getNode() as INode, response);
+		}
+
+		return response;
+	} catch (error) {
+		throw new NodeApiError(this.getNode() as INode, error);
 	}
 }
 
