@@ -1,6 +1,6 @@
 export type FiderCredentials = {
-	url: string;
-	apiToken: string;
+	name?: string;
+	apiToken?: string;
 };
 
 export type Post = {

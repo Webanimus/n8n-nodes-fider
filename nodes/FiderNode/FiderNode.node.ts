@@ -35,7 +35,7 @@ export class FiderNode implements INodeType {
 				displayName: 'Resource',
 				name: 'resource',
 				type: 'options',
-				noDataExpression: true, // Ajouté
+				noDataExpression: true,
 				options: [
 					{
 						name: 'Post',

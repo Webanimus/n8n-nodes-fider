@@ -28,7 +28,7 @@ export async function apiRequest(
 			...qs,
 			token: credentials.apiToken,
 		},
-		baseURL: credentials.url,
+		baseURL: baseUrl,
 		url: `${endpoint}`,
 		json: true,
 	};
