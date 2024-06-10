@@ -30,7 +30,7 @@ export class FiderApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '={{"Bearer " + $credentials.authToken}}',
+				Authorization: '=Bearer {{$credentials.authToken}}',
 			},
 		},
 	};
