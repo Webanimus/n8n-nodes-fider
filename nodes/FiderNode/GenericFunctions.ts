@@ -1,16 +1,10 @@
-import { OptionsWithUri } from 'request';
 import {
-	IHookFunctions,
-	ILoadOptionsFunctions,
-	IWebhookFunctions,
-} from 'n8n-core';
-
-import {
+	IAllExecuteFunctions,
 	IDataObject,
 	IExecuteFunctions,
-	INode,
+	IHttpRequestMethods,
+	IHttpRequestOptions,
 	NodeApiError,
-	NodeOperationError,
 } from 'n8n-workflow';
 
 import { FiderCredentials} from './types';
@@ -18,62 +12,55 @@ import { FiderCredentials} from './types';
 const baseUrl = 'http://localhost';
 
 export async function apiRequest(
-	this: IExecuteFunctions | IHookFunctions | ILoadOptionsFunctions | IWebhookFunctions,
-	method: string,
-	resource: string,
+	this: IAllExecuteFunctions,
+	method: IHttpRequestMethods,
+	endpoint: string,
 	body: IDataObject = {},
 	qs: IDataObject = {},
-	uri?: string,
-	option: IDataObject = {},
+	extradOptions: Partial<IHttpRequestOptions> = {},
 ): Promise<IDataObject> {
-	const credentials = await this.getCredentials('fiderApi') as FiderCredentials;
-
-
-	if (!credentials.url || !credentials.apiToken) {
-		throw new NodeOperationError(this.getNode() as INode, 'Credentials are not set!');
-	}
-
-	let options: OptionsWithUri = {
+	const credentials = (await this.getCredentials('fiderApi')) as FiderCredentials;
+	const options: IHttpRequestOptions = {
+		...extradOptions,
 		method,
-		qs,
 		body,
-		uri: uri || `${credentials.url}${resource}`,
+		qs: {
+			...qs,
+			token: credentials.apiToken,
+		},
+		baseURL: credentials.url,
+		url: `${endpoint}`,
 		json: true,
 	};
 
-	options = Object.assign({}, options, option);
-
-	// Check if the constructed URI is valid
 	try {
-		new URL(options.uri!);
+		return (await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			'fiderApi',
+			options,
+		)) as IDataObject;
 	} catch (error) {
-		throw new NodeOperationError(this.getNode() as INode, `Invalid URI: ${options.uri}`);
-	}
-
-	try {
-		// Set the authorization header
-		options.headers = {
-			Authorization: `Bearer ${credentials.apiToken}`,
+		const errorDetails = {
+			...error,
+			consig: error?.cause?.config,
+			request: error?.cause?.request
+				? {
+					path: error?.cause?.request?.path,
+					_headers: error?.cause?.request?._headers,
+					data: error?.cause?.request?.config?.data,
+				}
+				: null,
+			response: error?.cause?.request
+				? {
+					data: error?.cause?.response?.data,
+					status: error?.cause?.response?.status,
+				}
+				: null,
 		};
-
-		// If the method is GET, remove the body property
-		if (method === 'GET') {
-			delete options.body;
-		}
-
-		// Perform the HTTP request
-		const response = await this.helpers.request!(options);
-
-		// Handle the response
-		if (response.error) {
-			throw new NodeApiError(this.getNode() as INode, response);
-		}
-
-		return response;
-	} catch (error) {
-		throw new NodeApiError(this.getNode() as INode, error);
+		throw new NodeApiError(this.getNode(), errorDetails);
 	}
 }
+
 
 export async function createNewPost(
 	this: IExecuteFunctions,
